@@ -44,6 +44,7 @@ print("\nРабочее окно задано\nНажмите 'S' для ста�
 
 paused = True
 last_check_time = time.time()
+last_play_click_time = time.time()
 
 while True:
     if keyboard.is_pressed('S'):
@@ -85,10 +86,11 @@ while True:
         if check_white_color(scrn, window_rect):
             last_check_time = current_time
 
-    # После окончания игрового процесса нажать кнопку "Play"
-    if not pixel_found:
+    # Нажать кнопку "Play" не чаще чем раз в 7 секунд
+    if not pixel_found and current_time - last_play_click_time >= 7:
         click(*PLAY_BUTTON_COORDS)
         print('Кнопка "Play" нажата')
+        last_play_click_time = current_time
         time.sleep(1)
 
 print('Стоп')
