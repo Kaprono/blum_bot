@@ -3,9 +3,6 @@ import time
 import keyboard
 import random
 from pynput.mouse import Button, Controller
-import pygetwindow as gw
-import tkinter as tk
-from tkinter import simpledialog
 
 mouse = Controller()
 time.sleep(0.5)
@@ -29,22 +26,36 @@ def check_white_color(scrn, window_rect):
             return True
     return False
 
-# Координаты рабочего окна
-WORK_WINDOW = {
-    'left': 681,
-    'top': 257,
-    'right': 1231,
-    'bottom': 911,
-}
+def check_for_objects(scrn, window_rect):
+    width, height = scrn.size
+    for x in range(0, width, 20):
+        for y in range(0, height, 20):
+            r, g, b = scrn.getpixel((x, y))
+            if (r in range(200, 255)) and (g in range(0, 200)) and (b in range(200, 255)):  # Фиолетовые объекты
+                screen_x = window_rect[0] + x + 3
+                screen_y = window_rect[1] + y + 5
+                click(screen_x, screen_y)
+                return True
+            elif (r in range(128, 200)) and (g in range(128, 200)) and (b in range(128, 200)):  # Серые объекты
+                screen_x = window_rect[0] + x + 3
+                screen_y = window_rect[1] + y + 5
+                click(screen_x, screen_y)
+                return True
+    return False
 
-# Координаты кнопки "Play"
-PLAY_BUTTON_COORDS = (971, 866)
+# Координаты рабочего окна (каждый меняет под себя черех XY_finder.py)
+WORK_WINDOW = {
+    'left': 1003,
+    'top': 322,
+    'right': 1549,
+    'bottom': 914
+}
 
 print("\nРабочее окно задано\nНажмите 'S' для старта.")
 
 paused = True
 last_check_time = time.time()
-last_play_click_time = time.time()
+last_object_time = time.time()
 
 while True:
     if keyboard.is_pressed('S'):
@@ -66,31 +77,17 @@ while True:
     scrn = pyautogui.screenshot(region=(window_rect[0], window_rect[1], window_rect[2], window_rect[3]))
 
     width, height = scrn.size
-    pixel_found = False
-    if pixel_found == True:
-        break
 
-    for x in range(0, width, 20):
-        for y in range(0, height, 20):
-            r, g, b = scrn.getpixel((x, y))
-            if (b in range(0, 125)) and (r in range(102, 220)) and (g in range(200, 255)):
-                screen_x = window_rect[0] + x + 3
-                screen_y = window_rect[1] + y + 5
-                click(screen_x, screen_y)
-                time.sleep(0.002)
-                pixel_found = True
-                break
+    if check_for_objects(scrn, window_rect):
+        last_object_time = time.time()
 
     current_time = time.time()
     if current_time - last_check_time >= 10:
         if check_white_color(scrn, window_rect):
             last_check_time = current_time
 
-    # Нажать кнопку "Play" не чаще чем раз в 7 секунд
-    if not pixel_found and current_time - last_play_click_time >= 7:
-        click(*PLAY_BUTTON_COORDS)
-        print('Кнопка "Play" нажата')
-        last_play_click_time = current_time
-        time.sleep(1)
+    if current_time - last_object_time >= 3:
+        click(1420, 706)  # Нажатие кнопки Play
+        last_object_time = time.time()
 
 print('Стоп')
