@@ -12,20 +12,6 @@ def click(x, y):
     mouse.press(Button.left)
     mouse.release(Button.left)
 
-def check_white_color(scrn, window_rect):
-    width, height = scrn.size
-    for x in range(0, width, 20):
-        y = height - height // 8
-        r, g, b = scrn.getpixel((x, y))
-        if (r, g, b) == (255, 255, 255):
-            screen_x = window_rect[0] + x
-            screen_y = window_rect[1] + y
-            click(screen_x, screen_y)
-            print('Начинаю новую игру')
-            time.sleep(0.001)
-            return True
-    return False
-
 def check_for_objects(scrn, window_rect):
     width, height = scrn.size
     for x in range(0, width, 20):
@@ -43,13 +29,16 @@ def check_for_objects(scrn, window_rect):
                 return True
     return False
 
-# Координаты рабочего окна (каждый меняет под себя черех XY_finder.py)
+# Координаты рабочего окна
 WORK_WINDOW = {
-    'left': 1003,
-    'top': 322,
-    'right': 1549,
-    'bottom': 914
+    'left': 13,
+    'top': 91,
+    'right': 2505,
+    'bottom': 1033
 }
+
+# Координаты кнопки "Новая игра"
+NEW_GAME_BUTTON_COORDS = (1500, 800)  # Замените на реальные координаты кнопки "Новая игра"
 
 print("\nРабочее окно задано\nНажмите 'S' для старта.")
 
@@ -83,11 +72,11 @@ while True:
 
     current_time = time.time()
     if current_time - last_check_time >= 10:
-        if check_white_color(scrn, window_rect):
-            last_check_time = current_time
+        click(NEW_GAME_BUTTON_COORDS[0], NEW_GAME_BUTTON_COORDS[1])
+        last_check_time = current_time
 
     if current_time - last_object_time >= 3:
-        click(1420, 706)  # Нажатие кнопки Play
+        click(NEW_GAME_BUTTON_COORDS[0], NEW_GAME_BUTTON_COORDS[1])
         last_object_time = time.time()
 
 print('Стоп')
